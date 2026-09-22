@@ -1,0 +1,42 @@
+============================================================
+POST-MORTEM: INC-5B7D142F
+============================================================
+Title:    Payment service: 45% error rate
+Severity: P1 - Critical
+Status:   resolved
+Duration: 0 minutes
+Time to mitigate: 0 minutes
+Commander: alice@company.com
+Responders: bob@company.com, charlie@company.com
+Affected services: payment-service, checkout-api
+
+ROOT CAUSE
+----------------------------------------
+Stripe payment gateway outage - external dependency failure
+
+TIMELINE
+----------------------------------------
+  01:22:30 [system] Incident declared: Payment service: 45% error rate [P1 - Critical]
+  01:22:30 [system] Incident commander: alice@company.com
+  01:22:31 [system] Responder joined: bob@company.com
+  01:22:31 [system] Responder joined: charlie@company.com
+  01:22:31 [alice] Status page updated: We are aware of payment issues
+  01:22:31 [alice] Status changed: triaging -> responding
+  01:22:31 [bob] Checked payment logs: Stripe API returning 503 for all requests
+  01:22:31 [bob] Verified: Stripe status page shows Investigating
+  01:22:31 [charlie] Database connections normal - ruling out DB cause
+  01:22:31 [bob] Enabling payment fallback mode - queuing orders
+  01:22:31 [alice] Status page updated: Payments queued, no orders lost
+  01:22:31 [alice] Status changed: responding -> mitigated
+  01:22:31 [charlie] Stripe API returning 200 - processing queued payments
+  01:22:31 [alice] All queued payments processed. Error rate back to 0.3%
+  01:22:31 [alice] Status changed: mitigated -> resolved
+  01:22:31 [system] Root cause identified: Stripe payment gateway outage - external dependency failure
+
+ACTION ITEMS
+----------------------------------------
+  1. Enable automatic fallback mode when Stripe error rate > 5% (owner: bob, due: 2 weeks)
+  2. Add Stripe status page to monitoring dashboard (owner: charlie, due: 1 week)
+  3. Document payment fallback runbook (owner: alice, due: 1 week)
+
+============================================================
